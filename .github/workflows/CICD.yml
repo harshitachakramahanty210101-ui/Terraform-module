@@ -26,26 +26,26 @@ jobs:
       with:
         terraform_version: 1.6.6
         
-    # 4 Google auth
+    # 4 Authenticate to GCP (MUST be before init)
     - name: Authenticate to GCP
       run: |
-          printf '%s' '${{ secrets.GCP_SA_KEY }}' > key.json
-          gcloud auth activate-service-account --key-file=key.json
-          gcloud config set project project-610c3ab2-3496-44d6-b0b
+        printf '%s' '${{ secrets.GCP_SA_KEY }}' > key.json
+        gcloud auth activate-service-account --key-file=key.json
+        gcloud config set project project-610c3ab2-3496-44d6-b0b
     
     # 5 Terraform Init
     - name: Terraform Init
-      run: terraform init
+      run: terraform init -input=false
 
     # 6 Terraform Validate  
     - name: Terraform Validate
       run: terraform validate
 
-    # 7 Terraform Plan 
-    - name: Terraform Plan
-      run: terraform plan
+    # 7 Terraform Plan (CREATE tfplan)
+    - name: Terraform Plan 
+      run: terraform plan -out=tfplan
     
-    # 8 Terraform Apply (only on main branch)
+    # 8 Terraform Apply (USE tfplan)
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve tfplan
