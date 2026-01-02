@@ -25,13 +25,13 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: 1.6.6
-
-    # 4 Authenticate to Google Cloud
+        
+    # 4 Google auth
     - name: Authenticate to GCP
       run: |
-        echo '${{ secrets.GCP_SA_KEY }}' > key.json
-        gcloud auth activate-service-account --key-file=key.json
-        gcloud config set project project-610c3ab2-3496-44d6-b0b
+          printf '%s' '${{ secrets.GCP_SA_KEY }}' > key.json
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud config set project project-610c3ab2-3496-44d6-b0b
     
     # 5 Terraform Init
     - name: Terraform Init
