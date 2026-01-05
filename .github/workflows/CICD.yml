@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          lfs: true
  
       # Authenticate via service account key JSON
       - name: Authenticate to Google Cloud (Key JSON)
@@ -30,7 +32,10 @@ jobs:
       - name: Terraform Init
         env:
           GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-        run: terraform init
+        run: |
+          terraform init -input=false \
+     #       -backend-config="bucket=${{ secrets.GCP_BACKEND_BUCKET }}" \
+     #       -backend-config="prefix=${{ secrets.GCP_BACKEND_PREFIX }}"
  
      # - name: Terraform Format
      #   run: terraform fmt -check
@@ -38,10 +43,11 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
  
-     # - name: Terraform Plan
-     #  env:
-     #    GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-     #  run: terraform plan -out=tfplan
+      - name: Terraform Plan
+        env:
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        run: terraform plan -out=tfplan
+ 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         env:
