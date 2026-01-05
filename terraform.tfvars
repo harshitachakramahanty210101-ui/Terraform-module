@@ -7,4 +7,5 @@ vm_name       = "demo-vm"
 machine_type  = "e2-medium"
 network_tags  = ["http-server", "https-server"]
 internal_cidr = "10.0.0.0/16"
+subnet_name   = "demo-subnet"
 
