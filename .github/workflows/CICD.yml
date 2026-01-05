@@ -39,10 +39,9 @@ jobs:
         run: terraform validate
  
      # - name: Terraform Plan
-        env:
-          GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-        run: terraform apply -auto-approve tfplan
- 
+     #  env:
+     #    GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+     #  run: terraform plan -out=tfplan
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         env:
