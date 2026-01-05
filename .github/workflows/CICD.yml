@@ -36,7 +36,7 @@ jobs:
     
     # 5 Terraform Init
     - name: Terraform Init
-      run: terraform init -input=false
+      run: terraform init
 
     # 6 Terraform Validate  
     - name: Terraform Validate
