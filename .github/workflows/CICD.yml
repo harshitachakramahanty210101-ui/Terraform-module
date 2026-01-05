@@ -41,7 +41,7 @@ jobs:
       - name: Terraform Plan
         env:
           GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-        run: terraform plan -out=tfplan
+        run: terraform plan -input=false -out=tfplan
  
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
