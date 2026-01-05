@@ -30,8 +30,9 @@ jobs:
     - name: Authenticate to GCP
       run: |
         echo '${{ secrets.GCP_SA_KEY }}' > key.json
+        export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
         gcloud auth activate-service-account --key-file=key.json
-        gcloud config set project project-610c3ab2-3496-44d6-b0b
+        gcloud config set project project-610c3ab2-3496-44d6-b0b  
     
     # 5 Terraform Init
     - name: Terraform Init
