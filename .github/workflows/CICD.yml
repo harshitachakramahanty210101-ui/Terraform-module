@@ -28,7 +28,7 @@ jobs:
         
     # 4 Authenticate to GCP (MUST be before init)
     - name: Authenticate to GCP
-      run: |
+      run: 
         printf '%s' '${{ secrets.GCP_SA_KEY }}' > key.json
         gcloud auth activate-service-account --key-file=key.json
         gcloud config set project project-610c3ab2-3496-44d6-b0b
