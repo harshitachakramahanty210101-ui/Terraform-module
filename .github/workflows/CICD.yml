@@ -1,55 +1,50 @@
-name: Terraform CI/CD
-
+name: Terraform CI/CD for GCP (Key-based)
+ 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-
+    branches: [ main ]
+ 
+permissions:
+  contents: read
+ 
 jobs:
   terraform:
-    name: Terraform
     runs-on: ubuntu-latest
-
+ 
     steps:
-    # 1 Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    # 2 Install gcloud
-    - name: Setup gcloud
-      uses: google-github-actions/setup-gcloud@v1
-
-    # 3 Setup Terraform
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.6.6
-    
-    # 4 Authenticate to Google Cloud
-    - name: Authenticate to GCP
-      run: |
-        echo '${{ secrets.GCP_SA_KEY }}' > key.json
-        export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
-        gcloud auth activate-service-account --key-file=key.json
-        gcloud config set project project-610c3ab2-3496-44d6-b0b  
-    
-    # 5 Terraform Init
-    - name: Terraform Init
-    env:
-      GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-      GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
-      run: terraform init
-
-    # 6 Terraform Validate  
-    - name: Terraform Validate
-      run: terraform validate
-
-    # 7 Terraform Plan (CREATE tfplan)
-    - name: Terraform Plan 
-      run: terraform plan -out=tfplan
-    
-    # 8 Terraform Apply (USE tfplan)
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve tfplan
+      - name: Checkout code
+        uses: actions/checkout@v4
+ 
+      # Authenticate via service account key JSON
+      - name: Authenticate to Google Cloud (Key JSON)
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+ 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.6"
+ 
+      - name: Terraform Init
+        env:
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        run: terraform init
+ 
+     # - name: Terraform Format
+     #   run: terraform fmt -check
+ 
+      - name: Terraform Validate
+        run: terraform validate
+ 
+      - name: Terraform Plan
+        env:
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        run: terraform plan -out=tfplan
+ 
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        env:
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        run: terraform apply -auto-approve tfplan
